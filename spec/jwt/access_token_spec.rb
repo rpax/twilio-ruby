@@ -142,6 +142,15 @@ describe Twilio::JWT::AccessToken do
         expect(payload['grants']['task_router']['role']).to eq('worker')
       end
 
+      it 'Player grant' do
+        player_grant = Twilio::JWT::AccessToken::PlayerGrant.new
+        player_grant.playback_grant = { 'playbackUrl' => 'https://video.net?token=eyJ3423432434234234', 'playerStreamerSid' => 'VJ123' }
+        @scat.add_grant(player_grant)
+        payload, _ = JWT.decode @scat.to_s, 'secret'
+        expect(payload['grants'].count).to eq(1)
+        expect(payload['grants']['player']).to eq({ 'playbackUrl' => 'https://video.net?token=eyJ3423432434234234', 'playerStreamerSid' => 'VJ123' })
+      end
+
       it 'multiple grants' do
         room_grant = Twilio::JWT::AccessToken::VideoGrant.new
         room_grant.room = 'RM123'
